@@ -1,11 +1,9 @@
 services:
   - type: web
-    name: certificate-generator
+    name: certificate-app
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app:app -b 0.0.0.0:$PORT"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.9.0
       - key: DOMAIN
-        value: https://your-app-name.onrender.com
+        value: 'https://certificate-gen-3.onrender.com'

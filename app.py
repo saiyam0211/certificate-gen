@@ -5,11 +5,15 @@ import uuid
 import os
 import json
 from datetime import datetime
+import logging
 
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
 # Use environment variable for the domain
-DOMAIN = os.environ.get('DOMAIN', 'http://localhost:10000')
+DOMAIN = os.environ.get('DOMAIN', 'https://certificate-gen-3.onrender.com')
 
 # Use a directory that Render can write to
 UPLOAD_FOLDER = '/tmp/certificates'
@@ -100,13 +104,17 @@ def verify_form():
 @app.route('/verify/<certificate_id>')
 def verify_certificate(certificate_id):
     code = request.args.get('code', '')
+    logging.info(f"Verifying certificate: {certificate_id} with code: {code}")
+    
     db = load_database()
     certificate_data = db.get(certificate_id)
     
     if not certificate_data:
+        logging.error("Certificate not found.")
         return render_template('verify.html', valid=False, error="Certificate not found")
     
     if code != certificate_data.get('verification_code'):
+        logging.error("Invalid verification code.")
         return render_template('verify.html', valid=False, error="Invalid verification code")
     
     return render_template('verify.html', valid=True, certificate=certificate_data)
