@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .verified {
+            color: green;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .certificate-data {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Certificate Verification</h1>
+    <div class="verified">✓ This certificate is valid</div>
+    <div class="certificate-data">
+        <h2>Certificate Details</h2>
+        <p><strong>Recipient:</strong> {{ certificate.recipient }}</p>
+        <p><strong>Competition:</strong> {{ certificate.competition }}</p>
+        <p><strong>Position:</strong> {{ certificate.position }}</p>
+        <p><strong>Date Issued:</strong> {{ certificate.date }}</p>
+        <p><strong>Certificate ID:</strong> {{ certificate.certificate_id }}</p>
+    </div>
+    
+    <!-- LinkedIn Share Button -->
+    <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+    <script type="IN/Share" 
+        data-url="{{request.url}}"
+        data-title="My Achievement Certificate"
+        data-description="{{ certificate.recipient }} achieved {{ certificate.position }} in {{ certificate.competition }}"></script>
+</body>
+</html>

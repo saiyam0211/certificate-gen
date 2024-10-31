@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Certificate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .valid {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+        }
+        .invalid {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+            color: #a94442;
+        }
+    </style>
+</head>
+<body>
+    <h1>Verify Certificate</h1>
+    <div id="verifyForm">
+        <div class="form-group">
+            <label for="certificate_id">Certificate ID:</label>
+            <input type="text" id="certificate_id" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="verification_code">Verification Code:</label>
+            <input type="text" id="verification_code" required>
+        </div>
+        
+        <button onclick="verifyCertificate()">Verify Certificate</button>
+    </div>
+    
+    <div id="result" style="display: none;" class="result"></div>
+
+    <script>
+        async function verifyCertificate() {
+            const certificateId = document.getElementById('certificate_id').value;
+            const verificationCode = document.getElementById('verification_code').value;
+            
+            try {
+                const response = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        certificate_id: certificateId,
+                        verification_code: verificationCode
+                    })
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                
+                if (data.valid) {
+                    resultDiv.className = 'result valid';
+                    resultDiv.innerHTML = `
+                        <h2>✓ Valid Certificate</h2>
+                        <p><strong>Recipient:</strong> ${data.certificate.recipient}</p>
+                        <p><strong>Competition:</strong> ${data.certificate.competition}</p>
+                        <p><strong>Position:</strong> ${data.certificate.position}</p>
+                        <p><strong>Date Issued:</strong> ${data.certificate.date}</p>
+                    `;
+                } else {
+                    resultDiv.className = 'result invalid';
+                    resultDiv.innerHTML = `<h2>✗ Invalid Certificate</h2><p>${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result invalid';
+                resultDiv.innerHTML = '<h2>✗ Error</h2><p>Failed to verify certificate. Please try again.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
